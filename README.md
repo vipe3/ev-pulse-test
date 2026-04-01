@@ -1,5 +1,7 @@
 # EV Pulse
 
+**🚀 Live Demo:** [https://ev-pulse-test.vercel.app/](https://ev-pulse-test.vercel.app/)
+
 EV Pulse is a premium, minimalist stock market dashboard designed specifically for tracking Electric Vehicle (EV) stocks. It provides a clean, high-performance interface focusing on real-time data, position tracking, and progressive disclosure, all while adhering to strict design principles for optimal data-ink ratio and an intuitive inverted pyramid layout.
 
 ## Features
