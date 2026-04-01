@@ -15,7 +15,7 @@ export const StockDetailSlideOver: React.FC<SlideOverProps> = ({
   selectedStockSymbol, timeframe, onClose, onNavigate 
 }) => {
   const { stocks } = useStocks();
-  const rankings = useMemo(() => calculateRankings(stocks, timeframe), [stocks, timeframe]);
+  const rankings = useMemo(() => calculateRankings(stocks), [stocks]);
   
   const activeStock = rankings.find(r => r.symbol === selectedStockSymbol);
   const isOpen = !!activeStock;

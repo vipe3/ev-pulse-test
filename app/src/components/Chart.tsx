@@ -47,11 +47,23 @@ const CustomTooltip = ({ active, payload, label, selectedStockSymbol }: CustomTo
 };
 
 export const PerformanceChart: React.FC<ChartProps> = ({ timeframe, comparison, selectedStockSymbol, visibleStocks }) => {
-  const { stocks } = useStocks();
-  const chartData = useMemo(() => calculateChartData(stocks, timeframe), [stocks, timeframe]);
+  const { stocks, interval } = useStocks();
+  const chartData = useMemo(() => calculateChartData(stocks), [stocks]);
   
   const stocksToChart = stocks.filter(s => s.group === 'EV-first' && visibleStocks.has(s.symbol));
   
+  const formatDate = (isoString: string) => {
+    try {
+      const d = new Date(isoString);
+      if (['5m', '15m', '1h'].includes(interval)) {
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+      return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    } catch {
+      return isoString.substring(5, 10);
+    }
+  };
+
   return (
     <div className="chart-section">
       <div className="chart-header">
@@ -67,7 +79,7 @@ export const PerformanceChart: React.FC<ChartProps> = ({ timeframe, comparison, 
               fontSize={12} 
               tickLine={false}
               axisLine={false}
-              tickFormatter={(val) => val.substring(5)} // Show MM-DD
+              tickFormatter={formatDate}
               minTickGap={30}
             />
             <YAxis 

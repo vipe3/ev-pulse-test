@@ -3,15 +3,14 @@ import { Header } from './components/Header';
 import { PerformanceChart } from './components/Chart';
 import { Rankings } from './components/Rankings';
 import { StockDetailSlideOver } from './components/StockDetailSlideOver';
-import type { Timeframe, Comparison } from './data/types';
+import type { Comparison } from './data/types';
 import { useStocks } from './StockContext';
 
 function App() {
-  const [timeframe, setTimeframe] = useState<Timeframe>('1M');
   const [comparison, setComparison] = useState<Comparison>('EV Basket');
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
   
-  const { stocks, loading, error } = useStocks();
+  const { stocks, loading, error, timeframe } = useStocks();
 
   const evStocks = stocks.filter(s => s.group === 'EV-first');
   const [visibleStocks, setVisibleStocks] = useState<Set<string>>(new Set());
@@ -58,8 +57,6 @@ function App() {
   return (
     <div className="app-container">
       <Header 
-        timeframe={timeframe} 
-        setTimeframe={setTimeframe} 
         comparison={comparison}
         setComparison={setComparison}
       />

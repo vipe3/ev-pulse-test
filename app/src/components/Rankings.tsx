@@ -15,7 +15,7 @@ interface RankingsProps {
 
 export const Rankings: React.FC<RankingsProps> = ({ timeframe, selectedStockSymbol, onSelectStock, visibleStocks, onToggleStockVisibility }) => {
   const { stocks } = useStocks();
-  const rankings = useMemo(() => calculateRankings(stocks, timeframe), [stocks, timeframe]);
+  const rankings = useMemo(() => calculateRankings(stocks), [stocks]);
   
   // Per design, display EV First by default. We can show them all or filter. Let's just show EV First to keep context clean.
   const evRankings = rankings.filter(r => r.isEv);

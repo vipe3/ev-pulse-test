@@ -1,4 +1,4 @@
-import type { Stock } from './types';
+import type { Stock, Timeframe, Interval } from './types';
 import { fetchStockData } from './yahooApi';
 
 const STOCK_DEFINITIONS = [
@@ -14,13 +14,22 @@ const STOCK_DEFINITIONS = [
   { symbol: 'TM', name: 'Toyota', group: 'Big Auto' as const },
 ];
 
-export const loadAllStocks = async (): Promise<Stock[]> => {
+const TIMEFRAME_TO_RANGE_MAP: Record<Timeframe, string> = {
+  '1D': '1d',
+  '1W': '5d',
+  '1M': '1mo',
+  '90D': '3mo',
+  'YTD': 'ytd'
+};
+
+export const loadAllStocks = async (timeframe: Timeframe, interval: Interval): Promise<Stock[]> => {
   const stocks: Stock[] = [];
+  const range = TIMEFRAME_TO_RANGE_MAP[timeframe] || '1mo';
   
   // We fetch them in parallel for speed
   const promises = STOCK_DEFINITIONS.map(async (def) => {
     try {
-      const series = await fetchStockData(def.symbol);
+      const series = await fetchStockData(def.symbol, range, interval);
       return {
         ...def,
         series
@@ -33,6 +42,7 @@ export const loadAllStocks = async (): Promise<Stock[]> => {
 
   const results = await Promise.all(promises);
   results.forEach(res => {
+    // Only include stocks that actually returned valid data points
     if (res && res.series.length > 0) {
       stocks.push(res);
     }

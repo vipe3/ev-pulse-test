@@ -1,16 +1,4 @@
-import type { Stock, Timeframe, CalculatedDataPoint } from './types';
-
-// Gets the slice of aligned dates based on the timeframe
-export const getDateSliceIndex = (timeframe: Timeframe, totalDays: number): number => {
-  switch (timeframe) {
-    case '1D': return Math.max(0, totalDays - 2); // Need previous close (last 2 days)
-    case '1W': return Math.max(0, totalDays - 5); // 5 trading days
-    case '1M': return Math.max(0, totalDays - 21); // ~21 trading days
-    case '90D': return Math.max(0, totalDays - 63); // ~63 trading days
-    case 'YTD': return Math.max(0, totalDays - 60); // Mock YTD (approx 3 months)
-    default: return 0;
-  }
-};
+import type { Stock, CalculatedDataPoint } from './types';
 
 const getCommonDates = (stocks: Stock[]): string[] => {
   if (stocks.length === 0) return [];
@@ -19,16 +7,14 @@ const getCommonDates = (stocks: Stock[]): string[] => {
 };
 
 export const calculateChartData = (
-  stocks: Stock[],
-  timeframe: Timeframe,
+  stocks: Stock[]
 ): CalculatedDataPoint[] => {
   const dates = getCommonDates(stocks);
   if (!dates.length) return [];
 
-  const startIndex = getDateSliceIndex(timeframe, dates.length);
-  const relevantDates = dates.slice(startIndex);
+  const startIndex = 0;
   
-  const chartData: CalculatedDataPoint[] = relevantDates.map(date => {
+  const chartData: CalculatedDataPoint[] = dates.map(date => {
     const point: CalculatedDataPoint = { date };
     
     // Track sums for baskets
@@ -82,13 +68,12 @@ export interface StockRanking {
 }
 
 export const calculateRankings = (
-  stocks: Stock[],
-  timeframe: Timeframe,
+  stocks: Stock[]
 ): StockRanking[] => {
   const dates = getCommonDates(stocks);
   if (!dates.length) return [];
   
-  const startIndex = getDateSliceIndex(timeframe, dates.length);
+  const startIndex = 0;
   const endIndex = dates.length - 1;
 
   return stocks.map(stock => {
@@ -111,10 +96,9 @@ export const calculateRankings = (
 }
 
 export const getBasketReturns = (
-  stocks: Stock[],
-  timeframe: Timeframe,
+  stocks: Stock[]
 ): { 'EV Basket': number, 'Big Auto': number } => {
-  const chartData = calculateChartData(stocks, timeframe);
+  const chartData = calculateChartData(stocks);
   const lastPoint = chartData[chartData.length - 1];
   
   return {
