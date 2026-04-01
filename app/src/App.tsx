@@ -4,25 +4,25 @@ import { PerformanceChart } from './components/Chart';
 import { Rankings } from './components/Rankings';
 import { StockDetailSlideOver } from './components/StockDetailSlideOver';
 import type { Timeframe, Comparison } from './data/types';
-import { MOCK_STOCKS, tickMockPrices } from './data/mockData';
+import { useStocks } from './StockContext';
 
 function App() {
   const [timeframe, setTimeframe] = useState<Timeframe>('1M');
   const [comparison, setComparison] = useState<Comparison>('EV Basket');
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
-  const [, setTick] = useState<number>(0); // Drives simulated live updates
+  
+  const { stocks, loading, error } = useStocks();
 
-  const evStocks = MOCK_STOCKS.filter(s => s.group === 'EV-first');
-  const [visibleStocks, setVisibleStocks] = useState<Set<string>>(new Set(evStocks.map(s => s.symbol)));
+  const evStocks = stocks.filter(s => s.group === 'EV-first');
+  const [visibleStocks, setVisibleStocks] = useState<Set<string>>(new Set());
 
-  // Simulated live data feed (updating hourly per user preference)
+  // Initialize visible stocks when loaded
   useEffect(() => {
-    const interval = setInterval(() => {
-      tickMockPrices();
-      setTick(t => t + 1); // Trigger re-render
-    }, 60 * 60 * 1000); // 1 hour
-    return () => clearInterval(interval);
-  }, []);
+    if (stocks.length > 0 && visibleStocks.size === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setVisibleStocks(new Set(stocks.filter(s => s.group === 'EV-first').map(s => s.symbol)));
+    }
+  }, [stocks, visibleStocks]);
 
   const toggleStockVisibility = (symbol: string) => {
     setVisibleStocks(prev => {
@@ -34,7 +34,7 @@ function App() {
   };
 
   const handleNavigate = (dir: 'next' | 'prev') => {
-    if (!selectedStock) return;
+    if (!selectedStock || evStocks.length === 0) return;
     const currentIndex = evStocks.findIndex(s => s.symbol === selectedStock);
     if (currentIndex === -1) return;
     
@@ -46,6 +46,14 @@ function App() {
     }
     setSelectedStock(evStocks[newIndex].symbol);
   };
+
+  if (loading) {
+    return <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh',color:'#fff'}}>Loading real-world market data...</div>;
+  }
+  
+  if (error) {
+    return <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh',color:'red'}}>Error loading market data</div>;
+  }
 
   return (
     <div className="app-container">

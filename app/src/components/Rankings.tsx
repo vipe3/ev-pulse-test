@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import type { Timeframe } from '../data/types';
-import { MOCK_STOCKS } from '../data/mockData';
+import { useStocks } from '../StockContext';
 import { calculateRankings } from '../data/calculations';
 import { STOCK_COLORS } from '../data/constants';
 
@@ -14,7 +14,8 @@ interface RankingsProps {
 }
 
 export const Rankings: React.FC<RankingsProps> = ({ timeframe, selectedStockSymbol, onSelectStock, visibleStocks, onToggleStockVisibility }) => {
-  const rankings = useMemo(() => calculateRankings(MOCK_STOCKS, timeframe), [timeframe]);
+  const { stocks } = useStocks();
+  const rankings = useMemo(() => calculateRankings(stocks, timeframe), [stocks, timeframe]);
   
   // Per design, display EV First by default. We can show them all or filter. Let's just show EV First to keep context clean.
   const evRankings = rankings.filter(r => r.isEv);

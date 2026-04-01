@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { Timeframe, Comparison } from '../data/types';
 import { calculateChartData } from '../data/calculations';
-import { MOCK_STOCKS } from '../data/mockData';
 import { STOCK_COLORS } from '../data/constants';
+import { useStocks } from '../StockContext';
 
 interface ChartProps {
   timeframe: Timeframe;
@@ -46,14 +47,10 @@ const CustomTooltip = ({ active, payload, label, selectedStockSymbol }: CustomTo
 };
 
 export const PerformanceChart: React.FC<ChartProps> = ({ timeframe, comparison, selectedStockSymbol, visibleStocks }) => {
-  const chartData = useMemo(() => calculateChartData(MOCK_STOCKS, timeframe), [timeframe]);
+  const { stocks } = useStocks();
+  const chartData = useMemo(() => calculateChartData(stocks, timeframe), [stocks, timeframe]);
   
-  // What lines to render? 
-  // Base line: if comparison != None, show benchmark.
-  // Plus, show the EVs. If a stock is selected, we could highlight it by making others faint.
-  // For V1 straight lines, no fills.
-  
-  const stocksToChart = MOCK_STOCKS.filter(s => s.group === 'EV-first' && visibleStocks.has(s.symbol));
+  const stocksToChart = stocks.filter(s => s.group === 'EV-first' && visibleStocks.has(s.symbol));
   
   return (
     <div className="chart-section">

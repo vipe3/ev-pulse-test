@@ -6,7 +6,7 @@ const generateTradingDates = (days: number): string[] => {
   const start = new Date('2024-03-30'); // Today's date mock
   start.setUTCDate(start.getUTCDate() - (days * 1.5)); // Start further back to account for weekends
   
-  let current = new Date(start);
+  const current = new Date(start);
   while (dates.length < days) {
     if (current.getUTCDay() !== 0 && current.getUTCDay() !== 6) {
       dates.push(current.toISOString().split('T')[0]);

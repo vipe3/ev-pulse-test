@@ -1,26 +1,31 @@
 import type { Stock, Timeframe, CalculatedDataPoint } from './types';
-import { alignedDates } from './mockData';
 
 // Gets the slice of aligned dates based on the timeframe
 export const getDateSliceIndex = (timeframe: Timeframe, totalDays: number): number => {
   switch (timeframe) {
-    case '1D': return totalDays - 2; // Need previous close (last 2 days: index totalDays-2 and totalDays-1)
-    case '1W': return totalDays - 5; // 5 trading days
-    case '1M': return totalDays - 21; // ~21 trading days
-    case '90D': return totalDays - 63; // ~63 trading days
-    case 'YTD': return totalDays - 60; // Mock YTD (approx 3 months)
+    case '1D': return Math.max(0, totalDays - 2); // Need previous close (last 2 days)
+    case '1W': return Math.max(0, totalDays - 5); // 5 trading days
+    case '1M': return Math.max(0, totalDays - 21); // ~21 trading days
+    case '90D': return Math.max(0, totalDays - 63); // ~63 trading days
+    case 'YTD': return Math.max(0, totalDays - 60); // Mock YTD (approx 3 months)
     default: return 0;
   }
+};
+
+const getCommonDates = (stocks: Stock[]): string[] => {
+  if (stocks.length === 0) return [];
+  // Use the dates of the first stock as the baseline
+  return stocks[0].series.map(s => s.date);
 };
 
 export const calculateChartData = (
   stocks: Stock[],
   timeframe: Timeframe,
-  dates: string[] = alignedDates
 ): CalculatedDataPoint[] => {
-  const startIndex = Math.max(0, getDateSliceIndex(timeframe, dates.length));
-  
-  // Sliced dates for the chart window
+  const dates = getCommonDates(stocks);
+  if (!dates.length) return [];
+
+  const startIndex = getDateSliceIndex(timeframe, dates.length);
   const relevantDates = dates.slice(startIndex);
   
   const chartData: CalculatedDataPoint[] = relevantDates.map(date => {
@@ -79,15 +84,13 @@ export interface StockRanking {
 export const calculateRankings = (
   stocks: Stock[],
   timeframe: Timeframe,
-  dates: string[] = alignedDates
 ): StockRanking[] => {
-  const startIndex = Math.max(0, getDateSliceIndex(timeframe, dates.length));
+  const dates = getCommonDates(stocks);
+  if (!dates.length) return [];
+  
+  const startIndex = getDateSliceIndex(timeframe, dates.length);
   const endIndex = dates.length - 1;
 
-  // We are only ranking EV-first according to the product spec: 
-  // "By default, this shows a Ranked Table of the EV-first stocks". 
-  // Let's include everything but we can filter in the UI, or just return EV-first.
-  // Actually, V1 spec says "Ranked performance table", let's return all and filter in UI if needed.
   return stocks.map(stock => {
      const startPoint = stock.series[startIndex];
      const endPoint = stock.series[endIndex];
@@ -110,9 +113,8 @@ export const calculateRankings = (
 export const getBasketReturns = (
   stocks: Stock[],
   timeframe: Timeframe,
-  dates: string[] = alignedDates
 ): { 'EV Basket': number, 'Big Auto': number } => {
-  const chartData = calculateChartData(stocks, timeframe, dates);
+  const chartData = calculateChartData(stocks, timeframe);
   const lastPoint = chartData[chartData.length - 1];
   
   return {

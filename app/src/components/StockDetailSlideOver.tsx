@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { X, ChevronLeft, ChevronRight, Activity, AlertTriangle } from 'lucide-react';
-import { MOCK_STOCKS } from '../data/mockData';
+import { useStocks } from '../StockContext';
 import { calculateRankings } from '../data/calculations';
 import type { Timeframe } from '../data/types';
 
@@ -14,8 +14,8 @@ interface SlideOverProps {
 export const StockDetailSlideOver: React.FC<SlideOverProps> = ({ 
   selectedStockSymbol, timeframe, onClose, onNavigate 
 }) => {
-  
-  const rankings = useMemo(() => calculateRankings(MOCK_STOCKS, timeframe), [timeframe]);
+  const { stocks } = useStocks();
+  const rankings = useMemo(() => calculateRankings(stocks, timeframe), [stocks, timeframe]);
   
   const activeStock = rankings.find(r => r.symbol === selectedStockSymbol);
   const isOpen = !!activeStock;

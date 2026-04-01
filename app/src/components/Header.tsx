@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import type { Timeframe, Comparison } from '../data/types';
-import { MOCK_STOCKS } from '../data/mockData';
+import { useStocks } from '../StockContext';
 import { getBasketReturns } from '../data/calculations';
 
 interface HeaderProps {
@@ -14,7 +14,8 @@ export const Header: React.FC<HeaderProps> = ({ timeframe, setTimeframe, compari
   const timeframes: Timeframe[] = ['1D', '1W', '1M', '90D', 'YTD'];
   const comparisons: Comparison[] = ['EV Basket', 'Big Auto', 'None'];
 
-  const basketReturns = useMemo(() => getBasketReturns(MOCK_STOCKS, timeframe), [timeframe]);
+  const { stocks } = useStocks();
+  const basketReturns = useMemo(() => getBasketReturns(stocks, timeframe), [stocks, timeframe]);
 
   return (
     <header className="header">
