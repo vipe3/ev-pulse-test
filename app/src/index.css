@@ -333,3 +333,37 @@ body {
   padding: 3px 0;
   font-family: monospace;
 }
+
+/* Animations for Real-time pulse / flash */
+@keyframes pulse-dot {
+  0% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.live-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--ev-basket); /* Green */
+  display: inline-block;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes flash-green {
+  0% { color: #10b981; text-shadow: 0 0 8px rgba(16, 185, 129, 0.8); }
+  100% { color: inherit; text-shadow: none; }
+}
+
+@keyframes flash-red {
+  0% { color: #ef4444; text-shadow: 0 0 8px rgba(239, 68, 68, 0.8); }
+  100% { color: inherit; text-shadow: none; }
+}
+
+.flash-up {
+  animation: flash-green 1.5s ease-out forwards;
+}
+
+.flash-down {
+  animation: flash-red 1.5s ease-out forwards;
+}

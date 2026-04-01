@@ -73,6 +73,7 @@ export interface StockRanking {
   returnPct: number;
   currentPrice: number;
   isEv: boolean;
+  flashDirection?: 'up' | 'down';
 }
 
 export const calculateRankings = (
@@ -100,7 +101,8 @@ export const calculateRankings = (
        group: stock.group,
        returnPct,
        currentPrice: endPoint.price,
-       isEv: stock.group === 'EV-first'
+       isEv: stock.group === 'EV-first',
+       flashDirection: stock.flashDirection
      };
   }).sort((a, b) => b.returnPct - a.returnPct);
 }

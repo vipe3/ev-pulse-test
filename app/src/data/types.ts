@@ -11,6 +11,7 @@ export interface Stock {
   name: string;
   group: 'EV-first' | 'Big Auto';
   series: RawDataPoint[]; // One chronological time series
+  flashDirection?: 'up' | 'down';
 }
 
 export interface CalculatedDataPoint {

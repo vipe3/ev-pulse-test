@@ -43,3 +43,20 @@ export const MOCK_STOCKS: Stock[] = [
   { symbol: 'GM', name: 'GM', group: 'Big Auto', series: generateSeries(40, 0.015, 0.0005) },
   { symbol: 'TM', name: 'Toyota', group: 'Big Auto', series: generateSeries(240, 0.01, 0.001) },
 ];
+
+export const tickMockPrices = () => {
+  MOCK_STOCKS.forEach(stock => {
+    const lastPoint = stock.series[stock.series.length - 1];
+    // Random fluctuation between -0.15% and +0.15%
+    const change = (Math.random() - 0.5) * 0.003;
+    const newPrice = Number((lastPoint.price * (1 + change)).toFixed(2));
+    
+    // Set flash direction if explicitly changed
+    if (newPrice !== lastPoint.price) {
+      stock.flashDirection = newPrice > lastPoint.price ? 'up' : 'down';
+      lastPoint.price = newPrice;
+    } else {
+      stock.flashDirection = undefined;
+    }
+  });
+};

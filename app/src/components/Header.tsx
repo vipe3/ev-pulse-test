@@ -19,7 +19,12 @@ export const Header: React.FC<HeaderProps> = ({ timeframe, setTimeframe, compari
   return (
     <header className="header">
       <div className="header-brand">
-        <h1 className="h1" style={{ letterSpacing: '-0.05em' }}>EV Pulse</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h1 className="h1" style={{ letterSpacing: '-0.05em', margin: 0 }}>EV Pulse</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+            <span style={{ fontSize: '0.65rem', color: 'var(--ev-basket)', fontWeight: 600, letterSpacing: '0.05em' }}>1H SYNC</span>
+          </div>
+        </div>
         <div className="header-kpis">
           <div className="kpi">
             <span className="kpi-label">EV Basket</span>

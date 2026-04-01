@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Activity, AlertTriangle } from 'lucide-react';
 import { MOCK_STOCKS } from '../data/mockData';
 import { calculateRankings } from '../data/calculations';
 import type { Timeframe } from '../data/types';
@@ -79,14 +79,20 @@ export const StockDetailSlideOver: React.FC<SlideOverProps> = ({
              
              <div style={{ marginTop: '2.5rem' }}>
                <h3 style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: '1rem', color: 'var(--text-secondary)' }}>Recent News Alerts</h3>
-               <div style={{ fontSize: '0.875rem', color: 'var(--text-primary)', borderLeft: '2px solid var(--accent)', paddingLeft: '1rem', marginBottom: '1rem' }}>
-                 <p style={{ marginBottom: '0.25rem' }}>{activeStock.name} announces Q3 delivery numbers showing stronger than expected results in key markets.</p>
-                 <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>2 hours ago</span>
+               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', fontSize: '0.875rem', color: 'var(--text-primary)', borderLeft: '2px solid var(--accent)', paddingLeft: '1rem', marginBottom: '1rem' }}>
+                 <Activity size={16} style={{ color: 'var(--accent)', marginTop: '2px', flexShrink: 0 }} />
+                 <div>
+                   <p style={{ marginBottom: '0.25rem' }}>{activeStock.name} announces Q3 delivery numbers showing stronger than expected results in key markets.</p>
+                   <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>2 hours ago</span>
+                 </div>
                </div>
                {Math.abs(activeStock.returnPct) > 15 && (
-                 <div style={{ fontSize: '0.875rem', color: 'var(--text-primary)', borderLeft: '2px solid var(--accent)', paddingLeft: '1rem' }}>
-                   <p style={{ marginBottom: '0.25rem' }}>Unusual price movement detected over the selected `{timeframe}` timeframe.</p>
-                   <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>System Alert</span>
+                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', fontSize: '0.875rem', color: 'var(--text-primary)', borderLeft: '2px solid #ef4444', paddingLeft: '1rem' }}>
+                   <AlertTriangle size={16} style={{ color: '#ef4444', marginTop: '2px', flexShrink: 0 }} />
+                   <div>
+                     <p style={{ marginBottom: '0.25rem' }}>Unusual price movement detected over the selected `{timeframe}` timeframe.</p>
+                     <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>System Alert</span>
+                   </div>
                  </div>
                )}
              </div>

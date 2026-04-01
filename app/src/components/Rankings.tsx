@@ -53,23 +53,30 @@ export const Rankings: React.FC<RankingsProps> = ({ timeframe, selectedStockSymb
                    <span className="color-dot" style={{ backgroundColor: STOCK_COLORS[rank.symbol], opacity: visibleStocks.has(rank.symbol) ? 1 : 0.3 }} />
                    <div style={{ opacity: visibleStocks.has(rank.symbol) ? 1 : 0.5 }}>
                      {rank.name} <span className="text-xs text-muted" style={{ fontSize: '0.75rem' }}>({rank.symbol})</span>
-                     <div className="text-xs text-muted" style={{ fontSize: '0.75rem', marginTop: '2px', fontFamily: 'monospace' }}>
+                     <div 
+                       key={rank.currentPrice} /* force re-render for animation */
+                       className={`text-xs text-muted ${rank.flashDirection ? `flash-${rank.flashDirection}` : ''}`} 
+                       style={{ fontSize: '0.75rem', marginTop: '2px', fontFamily: 'monospace' }}
+                     >
                        ${rank.currentPrice.toFixed(2)}
                      </div>
                    </div>
                  </div>
                  <div className={`rank-value ${signClass}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                   <span>{sign}{rank.returnPct.toFixed(2)}%</span>
+                   <span key={rank.returnPct} /* force re-render for animation */ className={rank.flashDirection ? `flash-${rank.flashDirection}` : ''}>
+                     {sign}{rank.returnPct.toFixed(2)}%
+                   </span>
                    {isVolatile && (
                      <span style={{ 
                        fontSize: '0.65rem', 
-                       color: 'var(--accent)', 
+                       color: 'var(--bg-primary)', 
                        marginTop: '4px',
-                       background: 'rgba(59, 130, 246, 0.15)',
+                       background: 'var(--accent)',
                        padding: '2px 6px',
                        borderRadius: '4px',
                        textTransform: 'uppercase',
-                       letterSpacing: '0.05em'
+                       letterSpacing: '0.05em',
+                       fontWeight: 600
                      }}>
                        Volatile
                      </span>
