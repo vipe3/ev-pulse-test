@@ -3,32 +3,33 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianG
 import type { Timeframe, Comparison } from '../data/types';
 import { calculateChartData } from '../data/calculations';
 import { MOCK_STOCKS } from '../data/mockData';
-
-const STOCK_COLORS: Record<string, string> = {
-  TSLA: '#ef4444',
-  RIVN: '#f59e0b',
-  LCID: '#3b82f6',
-  NIO: '#8b5cf6',
-  XPEV: '#ec4899',
-  LI: '#14b8a6',
-  F: '#64748b',
-  GM: '#94a3b8',
-  TM: '#cbd5e1',
-  'EV Basket': '#10b981',
-  'Big Auto': '#6366f1'
-};
+import { STOCK_COLORS } from '../data/constants';
 
 interface ChartProps {
   timeframe: Timeframe;
   comparison: Comparison;
   selectedStockSymbol: string | null;
+  visibleStocks: Set<string>;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[];
+  label?: string;
+  selectedStockSymbol: string | null;
+}
+
+const CustomTooltip = ({ active, payload, label, selectedStockSymbol }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
-    // Sort payload by value descending
-    const sortedPayload = [...payload].sort((a, b) => b.value - a.value);
+    let displayPayload = payload;
+    if (selectedStockSymbol) {
+      displayPayload = payload.filter((entry) => entry.name === selectedStockSymbol);
+    }
     
+    const sortedPayload = [...displayPayload].sort((a, b) => b.value - a.value);
+    
+    if (sortedPayload.length === 0) return null;
+
     return (
       <div className="custom-tooltip">
         <div className="custom-tooltip-label">{label}</div>
@@ -44,7 +45,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export const PerformanceChart: React.FC<ChartProps> = ({ timeframe, comparison, selectedStockSymbol }) => {
+export const PerformanceChart: React.FC<ChartProps> = ({ timeframe, comparison, selectedStockSymbol, visibleStocks }) => {
   const chartData = useMemo(() => calculateChartData(MOCK_STOCKS, timeframe), [timeframe]);
   
   // What lines to render? 
@@ -52,7 +53,7 @@ export const PerformanceChart: React.FC<ChartProps> = ({ timeframe, comparison, 
   // Plus, show the EVs. If a stock is selected, we could highlight it by making others faint.
   // For V1 straight lines, no fills.
   
-  const stocksToChart = MOCK_STOCKS.filter(s => s.group === 'EV-first');
+  const stocksToChart = MOCK_STOCKS.filter(s => s.group === 'EV-first' && visibleStocks.has(s.symbol));
   
   return (
     <div className="chart-section">
@@ -79,7 +80,7 @@ export const PerformanceChart: React.FC<ChartProps> = ({ timeframe, comparison, 
               axisLine={false}
               tickFormatter={(val) => `${val > 0 ? '+' : ''}${val}%`}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip selectedStockSymbol={selectedStockSymbol} />} />
             
             {/* Draw EV Stocks */}
             {stocksToChart.map(stock => {

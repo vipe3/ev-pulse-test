@@ -1,27 +1,19 @@
 import React, { useMemo } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import type { Timeframe } from '../data/types';
 import { MOCK_STOCKS } from '../data/mockData';
 import { calculateRankings } from '../data/calculations';
+import { STOCK_COLORS } from '../data/constants';
 
 interface RankingsProps {
   timeframe: Timeframe;
   selectedStockSymbol: string | null;
   onSelectStock: (symbol: string) => void;
+  visibleStocks: Set<string>;
+  onToggleStockVisibility: (symbol: string) => void;
 }
 
-const STOCK_COLORS: Record<string, string> = {
-  TSLA: '#ef4444',
-  RIVN: '#f59e0b',
-  LCID: '#3b82f6',
-  NIO: '#8b5cf6',
-  XPEV: '#ec4899',
-  LI: '#14b8a6',
-  F: '#64748b',
-  GM: '#94a3b8',
-  TM: '#cbd5e1',
-};
-
-export const Rankings: React.FC<RankingsProps> = ({ timeframe, selectedStockSymbol, onSelectStock }) => {
+export const Rankings: React.FC<RankingsProps> = ({ timeframe, selectedStockSymbol, onSelectStock, visibleStocks, onToggleStockVisibility }) => {
   const rankings = useMemo(() => calculateRankings(MOCK_STOCKS, timeframe), [timeframe]);
   
   // Per design, display EV First by default. We can show them all or filter. Let's just show EV First to keep context clean.
@@ -49,9 +41,17 @@ export const Rankings: React.FC<RankingsProps> = ({ timeframe, selectedStockSymb
                  style={{ background: isSelected ? 'var(--bg-hover)' : '' }}
                  onClick={() => onSelectStock(rank.symbol)}
                >
-                 <div className="rank-symbol">
-                   <span className="color-dot" style={{ backgroundColor: STOCK_COLORS[rank.symbol] }} />
-                   <div>
+                 <div className="rank-symbol" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                   <button 
+                     className="text-muted" 
+                     style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
+                     onClick={(e) => { e.stopPropagation(); onToggleStockVisibility(rank.symbol); }}
+                     aria-label={visibleStocks.has(rank.symbol) ? "Hide stock" : "Show stock"}
+                   >
+                     {visibleStocks.has(rank.symbol) ? <Eye size={16} /> : <EyeOff size={16} opacity={0.5} />}
+                   </button>
+                   <span className="color-dot" style={{ backgroundColor: STOCK_COLORS[rank.symbol], opacity: visibleStocks.has(rank.symbol) ? 1 : 0.3 }} />
+                   <div style={{ opacity: visibleStocks.has(rank.symbol) ? 1 : 0.5 }}>
                      {rank.name} <span className="text-xs text-muted" style={{ fontSize: '0.75rem' }}>({rank.symbol})</span>
                      <div className="text-xs text-muted" style={{ fontSize: '0.75rem', marginTop: '2px', fontFamily: 'monospace' }}>
                        ${rank.currentPrice.toFixed(2)}

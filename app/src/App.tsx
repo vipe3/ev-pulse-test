@@ -12,6 +12,16 @@ function App() {
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
 
   const evStocks = MOCK_STOCKS.filter(s => s.group === 'EV-first');
+  const [visibleStocks, setVisibleStocks] = useState<Set<string>>(new Set(evStocks.map(s => s.symbol)));
+
+  const toggleStockVisibility = (symbol: string) => {
+    setVisibleStocks(prev => {
+      const next = new Set(prev);
+      if (next.has(symbol)) next.delete(symbol);
+      else next.add(symbol);
+      return next;
+    });
+  };
 
   const handleNavigate = (dir: 'next' | 'prev') => {
     if (!selectedStock) return;
@@ -40,6 +50,7 @@ function App() {
            timeframe={timeframe} 
            comparison={comparison}
            selectedStockSymbol={selectedStock}
+           visibleStocks={visibleStocks}
         />
         
         {/* We wrap the side panel and slide-over together so slide-over covers the rankings */}
@@ -48,6 +59,8 @@ function App() {
             timeframe={timeframe} 
             selectedStockSymbol={selectedStock}
             onSelectStock={setSelectedStock}
+            visibleStocks={visibleStocks}
+            onToggleStockVisibility={toggleStockVisibility}
           />
           <StockDetailSlideOver 
             selectedStockSymbol={selectedStock}
